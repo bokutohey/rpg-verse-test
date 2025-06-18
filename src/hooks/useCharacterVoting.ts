@@ -52,7 +52,11 @@ export const useCharacterVoting = (characterId: string, userId?: string) => {
         throw error;
       }
 
-      setUserVote(data);
+      if (data && (data.vote_type === 'like' || data.vote_type === 'dislike')) {
+        setUserVote({ vote_type: data.vote_type });
+      } else {
+        setUserVote(null);
+      }
     } catch (error) {
       console.error('Error fetching user vote:', error);
     }
