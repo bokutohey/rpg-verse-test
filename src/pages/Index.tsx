@@ -51,8 +51,6 @@ const Index = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
 
   // Filtrar personagens com base no termo de pesquisa
   const filteredCharacters = characters.filter(character =>
@@ -80,18 +78,9 @@ const Index = () => {
     setIsModalOpen(true);
   };
 
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    setCurrentUser(null);
-  };
-
   return (
     <div className="min-h-screen bg-background text-white">
-      <Header 
-        isAuthenticated={isAuthenticated}
-        username={currentUser?.username}
-        onLogout={handleLogout}
-      />
+      <Header />
 
       <main className="pt-20 pb-8">
         <div className="container mx-auto px-4">
@@ -159,7 +148,7 @@ const Index = () => {
         character={selectedCharacter}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        currentUserId={currentUser?.id}
+        currentUserId={null}
       />
     </div>
   );
