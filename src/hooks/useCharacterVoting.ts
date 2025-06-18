@@ -118,9 +118,10 @@ export const useCharacterVoting = (characterId: string, userId?: string) => {
     fetchVoteStats();
     fetchUserVote();
 
-    // Configurar escuta em tempo real para mudanças nos votos
+    // Configurar escuta em tempo real para mudanças nos votos com nome único
+    const channelName = `character-votes-${characterId}-${Date.now()}`;
     const channel = supabase
-      .channel('character-votes-changes')
+      .channel(channelName)
       .on(
         'postgres_changes',
         {

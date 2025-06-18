@@ -66,9 +66,10 @@ const CharacterLikes = ({ characterId }: CharacterLikesProps) => {
   useEffect(() => {
     fetchData();
 
-    // Configurar escuta em tempo real para mudanças nos votos
+    // Configurar escuta em tempo real para mudanças nos votos com nome único
+    const channelName = `character-likes-${characterId}-${Date.now()}`;
     const channel = supabase
-      .channel('character-likes-changes')
+      .channel(channelName)
       .on(
         'postgres_changes',
         {
