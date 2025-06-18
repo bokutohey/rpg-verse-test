@@ -85,12 +85,13 @@
   body {
     @apply bg-background text-foreground font-sans;
     background: 
-      radial-gradient(circle at 20% 20%, rgba(241, 250, 140, 0.15) 0%, transparent 40%),
-      radial-gradient(circle at 80% 80%, rgba(255, 85, 85, 0.12) 0%, transparent 45%),
-      radial-gradient(circle at 40% 60%, rgba(189, 147, 249, 0.08) 0%, transparent 50%),
-      linear-gradient(135deg, #1a1b26 0%, #282a36 30%, #44475a 70%, #282a36 100%);
+      radial-gradient(circle at 25% 25%, rgba(241, 250, 140, 0.2) 0%, transparent 50%),
+      radial-gradient(circle at 75% 25%, rgba(255, 85, 85, 0.18) 0%, transparent 45%),
+      radial-gradient(circle at 25% 75%, rgba(189, 147, 249, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, rgba(98, 114, 164, 0.12) 0%, transparent 45%),
+      linear-gradient(145deg, #1a1b26 0%, #282a36 25%, #44475a 50%, #282a36 75%, #1a1b26 100%);
     min-height: 100vh;
-    color: #f8f8f2;
+    color: #f8f8f2 !important;
     position: relative;
     overflow-x: hidden;
   }
@@ -103,10 +104,11 @@
     width: 100%;
     height: 100%;
     background: 
-      radial-gradient(circle at 15% 15%, rgba(241, 250, 140, 0.2) 0%, transparent 35%),
-      radial-gradient(circle at 85% 15%, rgba(255, 85, 85, 0.15) 0%, transparent 40%),
-      radial-gradient(circle at 50% 85%, rgba(98, 114, 164, 0.12) 0%, transparent 45%);
-    animation: backgroundPulse 12s ease-in-out infinite;
+      radial-gradient(circle at 20% 20%, rgba(241, 250, 140, 0.25) 0%, transparent 40%),
+      radial-gradient(circle at 80% 20%, rgba(255, 85, 85, 0.2) 0%, transparent 45%),
+      radial-gradient(circle at 20% 80%, rgba(189, 147, 249, 0.18) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(98, 114, 164, 0.15) 0%, transparent 40%);
+    animation: backgroundPulse 15s ease-in-out infinite;
     pointer-events: none;
     z-index: -2;
   }
@@ -118,8 +120,8 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f8f8f2' fill-opacity='0.02'%3E%3Ccircle cx='40' cy='40' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-    animation: patternMove 25s linear infinite;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f8f8f2' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    animation: patternMove 30s linear infinite;
     pointer-events: none;
     z-index: -1;
   }
@@ -130,7 +132,7 @@
   .dracula-card {
     @apply bg-card border border-border rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105;
     background: linear-gradient(145deg, #44475a, #3a3d4e);
-    color: #f8f8f2;
+    color: #f8f8f2 !important;
     position: relative;
     overflow: hidden;
   }
@@ -191,6 +193,11 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
     animation: gradientShift 3s ease-in-out infinite alternate;
+    font-weight: bold;
+    text-shadow: none;
+    line-height: 1.2;
+    padding: 0.2em 0;
+    overflow: visible;
   }
 }
 
@@ -205,21 +212,25 @@
     opacity: 1;
     transform: scale(1) rotate(0deg);
   }
-  33% { 
-    opacity: 0.7;
-    transform: scale(1.03) rotate(1deg);
+  25% { 
+    opacity: 0.8;
+    transform: scale(1.02) rotate(0.5deg);
   }
-  66% { 
+  50% { 
     opacity: 0.9;
-    transform: scale(0.98) rotate(-0.5deg);
+    transform: scale(1.01) rotate(-0.3deg);
+  }
+  75% { 
+    opacity: 0.7;
+    transform: scale(1.03) rotate(0.8deg);
   }
 }
 
 @keyframes patternMove {
   0% { transform: translateX(0) translateY(0); }
-  25% { transform: translateX(-30px) translateY(-30px); }
-  50% { transform: translateX(0) translateY(-60px); }
-  75% { transform: translateX(30px) translateY(-30px); }
+  25% { transform: translateX(-20px) translateY(-20px); }
+  50% { transform: translateX(0) translateY(-40px); }
+  75% { transform: translateX(20px) translateY(-20px); }
   100% { transform: translateX(0) translateY(0); }
 }
 
@@ -281,4 +292,31 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Correções específicas para visibilidade dos textos */
+h1, h2, h3, h4, h5, h6, p, span, div, label {
+  color: #f8f8f2 !important;
+}
+
+.text-white {
+  color: #f8f8f2 !important;
+}
+
+.text-gray-300 {
+  color: #e2e8f0 !important;
+}
+
+.text-gray-400 {
+  color: #cbd5e0 !important;
+}
+
+/* Garantir que o título não seja cortado */
+.title-container {
+  line-height: 1.1;
+  padding: 1rem 0;
+  overflow: visible;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

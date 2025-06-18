@@ -97,9 +97,11 @@ const Index = () => {
         <div className="container mx-auto px-4">
           {/* Hero Section */}
           <div className="text-center py-12">
-            <h1 className="text-4xl md:text-6xl font-bold dracula-gradient mb-6 float-animation">
-              🎭 Galeria de Personagens RPG
-            </h1>
+            <div className="title-container">
+              <h1 className="text-4xl md:text-6xl font-bold dracula-gradient mb-6 float-animation">
+                🎭 Galeria de Personagens RPG
+              </h1>
+            </div>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-8">
               Descubra histórias épicas e personagens únicos criados por nossa comunidade de RPG
             </p>

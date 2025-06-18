@@ -44,10 +44,10 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center p-4 pt-20">
       <Card className="w-full max-w-md dracula-card">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold dracula-gradient">
+          <CardTitle className="text-2xl font-bold text-white mb-2">
             🎭 Entrar
           </CardTitle>
-          <CardDescription className="text-white">
+          <CardDescription className="text-gray-300">
             Acesse sua conta para gerenciar seus personagens
           </CardDescription>
         </CardHeader>
