@@ -1,6 +1,6 @@
 
 import { Button } from '@/components/ui/button';
-import { User, LogOut, Plus } from 'lucide-react';
+import { User, LogOut, Plus, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -50,11 +50,25 @@ const Header = () => {
                 <Plus className="w-4 h-4 mr-2" />
                 Criar Personagem
               </Button>
+
+              {profile?.role === 'admin' && (
+                <Button
+                  variant="outline"
+                  onClick={() => navigate('/admin')}
+                  className="border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
+                >
+                  <Shield className="w-4 h-4 mr-2" />
+                  Admin
+                </Button>
+              )}
               
               <div className="flex items-center gap-2 px-3 py-1 bg-card rounded-lg">
                 <User className="w-4 h-4 text-primary" />
                 <span className="text-sm text-foreground">
                   {profile?.username || user.email?.split('@')[0]}
+                  {profile?.role === 'admin' && (
+                    <span className="ml-1 text-xs text-orange-500">(Admin)</span>
+                  )}
                 </span>
               </div>
               

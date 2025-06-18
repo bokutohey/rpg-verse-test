@@ -4,13 +4,12 @@ import { Card, CardContent } from '@/components/ui/card';
 interface Character {
   id: string;
   name: string;
-  playerName: string;
+  player_name: string;
   age: number;
   height: number;
-  rpgSystem: string;
-  friendship?: string;
+  rpg_system: string;
   story: string;
-  imageUrl?: string;
+  image_url?: string;
 }
 
 interface CharacterCardProps {
@@ -30,9 +29,9 @@ const CharacterCard = ({ character, onClick }: CharacterCardProps) => {
     >
       <CardContent className="p-0">
         <div className="aspect-square relative overflow-hidden">
-          {character.imageUrl ? (
+          {character.image_url ? (
             <img
-              src={character.imageUrl}
+              src={character.image_url}
               alt={character.name}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
             />
@@ -45,14 +44,14 @@ const CharacterCard = ({ character, onClick }: CharacterCardProps) => {
           <div className="absolute bottom-0 left-0 right-0 p-4">
             <div className="bg-black/70 backdrop-blur-sm rounded-lg p-3">
               <h3 className="text-lg font-bold text-white mb-1">{character.name}</h3>
-              <p className="text-sm text-gray-200">por {character.playerName}</p>
+              <p className="text-sm text-gray-200">por {character.player_name}</p>
             </div>
           </div>
         </div>
         
         <div className="p-4">
           <div className="text-xs text-accent font-medium mb-2 uppercase tracking-wide">
-            {character.rpgSystem}
+            {character.rpg_system}
           </div>
           <p className="text-sm text-white/90 leading-relaxed">
             {truncatedStory}

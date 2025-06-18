@@ -7,6 +7,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import FriendshipManager from '@/components/FriendshipManager';
 
 const rpgSystems = [
   'Véu Quebrado',
@@ -17,6 +20,11 @@ const rpgSystems = [
   'Kimetsu no Yaiba',
 ];
 
+interface Friendship {
+  friend_name: string;
+  friendship_level: number;
+}
+
 const CreateCharacter = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -24,14 +32,15 @@ const CreateCharacter = () => {
     age: '',
     height: '',
     rpgSystem: '',
-    friendship: '',
     story: '',
     image: null as File | null,
   });
+  const [friendships, setFriendships] = useState<Friendship[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData(prev => ({
@@ -62,21 +71,101 @@ const CreateCharacter = () => {
     }
   };
 
+  const uploadImage = async (file: File): Promise<string | null> => {
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}.${fileExt}`;
+      const filePath = `characters/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('character-images')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+        return null;
+      }
+
+      const { data } = supabase.storage
+        .from('character-images')
+        .getPublicUrl(filePath);
+
+      return data.publicUrl;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      return null;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!user) {
+      toast({
+        title: "Erro",
+        description: "Você precisa estar logado para criar um personagem.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      // TODO: Implementar criação com Supabase
-      console.log('Create character:', formData);
-      
+      let imageUrl = null;
+
+      // Upload da imagem se existir
+      if (formData.image) {
+        imageUrl = await uploadImage(formData.image);
+      }
+
+      // Criar personagem
+      const { data: character, error: characterError } = await supabase
+        .from('characters')
+        .insert({
+          name: formData.name,
+          player_name: formData.playerName,
+          age: parseInt(formData.age),
+          height: parseFloat(formData.height),
+          rpg_system: formData.rpgSystem,
+          story: formData.story,
+          image_url: imageUrl,
+          user_id: user.id
+        })
+        .select()
+        .single();
+
+      if (characterError) throw characterError;
+
+      // Criar amizades
+      if (friendships.length > 0) {
+        const friendshipData = friendships
+          .filter(f => f.friend_name.trim())
+          .map(friendship => ({
+            character_id: character.id,
+            friend_name: friendship.friend_name.trim(),
+            friendship_level: friendship.friendship_level
+          }));
+
+        if (friendshipData.length > 0) {
+          const { error: friendshipError } = await supabase
+            .from('character_friendships')
+            .insert(friendshipData);
+
+          if (friendshipError) {
+            console.error('Friendship error:', friendshipError);
+          }
+        }
+      }
+
       toast({
         title: "Personagem criado!",
-        description: "Conecte ao Supabase para salvar personagens reais.",
+        description: "Seu personagem foi criado com sucesso.",
       });
       
       navigate('/');
     } catch (error) {
+      console.error('Error creating character:', error);
       toast({
         title: "Erro",
         description: "Não foi possível criar o personagem.",
@@ -89,7 +178,7 @@ const CreateCharacter = () => {
 
   return (
     <div className="min-h-screen p-4 pt-24">
-      <div className="container mx-auto max-w-2xl">
+      <div className="container mx-auto max-w-4xl">
         <Card className="dracula-card">
           <CardHeader>
             <CardTitle className="text-2xl font-bold dracula-gradient text-center">
@@ -204,18 +293,10 @@ const CreateCharacter = () => {
                 </select>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="friendship">Amizades</Label>
-                <Input
-                  id="friendship"
-                  name="friendship"
-                  value={formData.friendship}
-                  onChange={handleChange}
-                  className="dracula-input"
-                  placeholder="Descreva as amizades do personagem"
-                  maxLength={200}
-                />
-              </div>
+              <FriendshipManager
+                friendships={friendships}
+                onFriendshipsChange={setFriendships}
+              />
 
               <div className="space-y-2">
                 <Label htmlFor="story">História do Personagem *</Label>

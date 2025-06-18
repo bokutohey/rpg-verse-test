@@ -9,22 +9,99 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      character_friendships: {
+        Row: {
+          character_id: string
+          created_at: string
+          friend_name: string
+          friendship_level: number
+          id: string
+        }
+        Insert: {
+          character_id: string
+          created_at?: string
+          friend_name: string
+          friendship_level: number
+          id?: string
+        }
+        Update: {
+          character_id?: string
+          created_at?: string
+          friend_name?: string
+          friendship_level?: number
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "character_friendships_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      characters: {
+        Row: {
+          age: number
+          created_at: string
+          height: number
+          id: string
+          image_url: string | null
+          name: string
+          player_name: string
+          rpg_system: string
+          story: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          age: number
+          created_at?: string
+          height: number
+          id?: string
+          image_url?: string | null
+          name: string
+          player_name: string
+          rpg_system: string
+          story: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          age?: number
+          created_at?: string
+          height?: number
+          id?: string
+          image_url?: string | null
+          name?: string
+          player_name?: string
+          rpg_system?: string
+          story?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
           id: string
+          role: Database["public"]["Enums"]["user_role"]
           updated_at: string
           username: string
         }
         Insert: {
           created_at?: string
           id: string
+          role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string
           username: string
         }
         Update: {
           created_at?: string
           id?: string
+          role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string
           username?: string
         }
@@ -35,10 +112,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: {
+        Args: { user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      user_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -153,6 +233,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      user_role: ["admin", "user"],
+    },
   },
 } as const

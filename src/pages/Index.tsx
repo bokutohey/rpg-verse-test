@@ -5,78 +5,49 @@ import { Search } from 'lucide-react';
 import CharacterCard from '@/components/CharacterCard';
 import CharacterModal from '@/components/CharacterModal';
 import Header from '@/components/Header';
-
-// Dados mock para demonstração
-const mockCharacters = [
-  {
-    id: '1',
-    name: 'Aragorn Dunedain',
-    playerName: 'João Silva',
-    age: 87,
-    height: 1.85,
-    rpgSystem: 'Véu Quebrado',
-    friendship: 'Legolas, Gimli',
-    story: 'Um ranger do Norte que descobriu ser o herdeiro perdido do trono de Gondor. Passou décadas protegendo o Condado e outras terras livres.',
-    imageUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&h=300&fit=crop',
-    userId: 'user1'
-  },
-  {
-    id: '2',
-    name: 'Sakura Haruno',
-    playerName: 'Maria Santos',
-    age: 16,
-    height: 1.61,
-    rpgSystem: 'Kimetsu no Yaiba',
-    friendship: 'Naruto, Sasuke',
-    story: 'Uma ninja médica excepcional, conhecida por sua força sobre-humana e habilidades de cura. Treinou sob a tutela da Quinta Hokage.',
-    imageUrl: 'https://images.unsplash.com/photo-1494790108755-2616c6d1f3d4?w=300&h=300&fit=crop',
-    userId: 'user2'
-  },
-  {
-    id: '3',
-    name: 'Darth Malak',
-    playerName: 'Carlos Ferreira',
-    age: 45,
-    height: 1.92,
-    rpgSystem: 'Star Wars: Guerra dos Clones',
-    friendship: '',
-    story: 'Outrora um Jedi promissor que caiu para o lado sombrio da Força. Agora serve como um temível Lorde Sith com uma mandíbula metálica.',
-    imageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop',
-    userId: 'user3'
-  },
-];
+import { useCharacters, Character } from '@/hooks/useCharacters';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Index = () => {
-  const [characters] = useState(mockCharacters);
+  const { characters, loading } = useCharacters();
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCharacter, setSelectedCharacter] = useState(null);
+  const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Filtrar personagens com base no termo de pesquisa
   const filteredCharacters = characters.filter(character =>
     character.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    character.rpgSystem.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    character.playerName.toLowerCase().includes(searchTerm.toLowerCase())
+    character.rpg_system.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    character.player_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Agrupar por sistema RPG
   const charactersByRPG = filteredCharacters.reduce((acc, character) => {
-    if (!acc[character.rpgSystem]) {
-      acc[character.rpgSystem] = [];
+    if (!acc[character.rpg_system]) {
+      acc[character.rpg_system] = [];
     }
-    acc[character.rpgSystem].push(character);
+    acc[character.rpg_system].push(character);
     return acc;
-  }, {} as Record<string, typeof characters>);
+  }, {} as Record<string, Character[]>);
 
   // Ordenar personagens por nome dentro de cada grupo
   Object.keys(charactersByRPG).forEach(rpg => {
     charactersByRPG[rpg].sort((a, b) => a.name.localeCompare(b.name));
   });
 
-  const handleCharacterClick = (character: any) => {
+  const handleCharacterClick = (character: Character) => {
     setSelectedCharacter(character);
     setIsModalOpen(true);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-white">Carregando personagens...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-white">
@@ -87,7 +58,7 @@ const Index = () => {
           {/* Hero Section */}
           <div className="text-center py-12">
             <div className="title-container">
-              <h1 className="text-4xl md:text-6xl font-bold dracula-gradient mb-6 float-animation">
+              <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 float-animation">
                 🎭 Galeria de Personagens RPG
               </h1>
             </div>
@@ -113,7 +84,10 @@ const Index = () => {
             <div className="text-center py-12">
               <span className="text-6xl mb-4 block">🔍</span>
               <p className="text-xl text-gray-300">
-                Nenhum personagem encontrado.
+                {characters.length === 0 
+                  ? "Nenhum personagem criado ainda. Seja o primeiro!" 
+                  : "Nenhum personagem encontrado."
+                }
               </p>
             </div>
           ) : (
@@ -148,7 +122,7 @@ const Index = () => {
         character={selectedCharacter}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        currentUserId={null}
+        currentUserId={user?.id}
       />
     </div>
   );
