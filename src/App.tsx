@@ -10,6 +10,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import CreateCharacter from './pages/CreateCharacter';
 import EditCharacter from './pages/EditCharacter';
+import MyCharacters from './pages/MyCharacters';
 import AdminPanel from './pages/AdminPanel';
 import NotFound from './pages/NotFound';
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -40,6 +41,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <EditCharacter />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/my-characters" 
+              element={
+                <ProtectedRoute>
+                  <MyCharacters />
                 </ProtectedRoute>
               } 
             />

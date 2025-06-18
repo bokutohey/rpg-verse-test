@@ -42,7 +42,7 @@ export const useCharacters = () => {
             friendship_level
           )
         `)
-        .order('created_at', { ascending: false });
+        .order('name', { ascending: true });
 
       if (error) throw error;
       setCharacters(data || []);
@@ -51,6 +51,36 @@ export const useCharacters = () => {
       toast({
         title: "Erro",
         description: "Não foi possível carregar os personagens.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchMyCharacters = async (userId: string) => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('characters')
+        .select(`
+          *,
+          character_friendships (
+            id,
+            friend_name,
+            friendship_level
+          )
+        `)
+        .eq('user_id', userId)
+        .order('name', { ascending: true });
+
+      if (error) throw error;
+      setCharacters(data || []);
+    } catch (error) {
+      console.error('Error fetching my characters:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível carregar seus personagens.",
         variant: "destructive",
       });
     } finally {
@@ -91,6 +121,7 @@ export const useCharacters = () => {
     characters,
     loading,
     fetchCharacters,
+    fetchMyCharacters,
     deleteCharacter
   };
 };

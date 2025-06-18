@@ -51,6 +51,15 @@ const Header = () => {
                 Criar Personagem
               </Button>
 
+              <Button
+                variant="outline"
+                onClick={() => navigate('/my-characters')}
+                className="border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
+              >
+                <User className="w-4 h-4 mr-2" />
+                Meus Personagens
+              </Button>
+
               {profile?.role === 'admin' && (
                 <Button
                   variant="outline"
