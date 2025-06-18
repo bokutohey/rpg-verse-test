@@ -18,6 +18,8 @@ const CharacterLikes = ({ characterId }: CharacterLikesProps) => {
   useEffect(() => {
     const fetchLikes = async () => {
       try {
+        console.log('Fetching likes for character:', characterId);
+        
         // Primeiro, buscar os votos de like para o personagem
         const { data: votes, error: votesError } = await supabase
           .from('character_votes')
@@ -27,6 +29,8 @@ const CharacterLikes = ({ characterId }: CharacterLikesProps) => {
 
         if (votesError) throw votesError;
 
+        console.log('Votes found:', votes);
+
         if (!votes || votes.length === 0) {
           setLikes([]);
           setLoading(false);
@@ -35,6 +39,8 @@ const CharacterLikes = ({ characterId }: CharacterLikesProps) => {
 
         // Buscar os usernames dos usuários que curtiram
         const userIds = votes.map(vote => vote.user_id);
+        console.log('User IDs to fetch:', userIds);
+        
         const { data: profiles, error: profilesError } = await supabase
           .from('profiles')
           .select('id, username')
@@ -42,15 +48,19 @@ const CharacterLikes = ({ characterId }: CharacterLikesProps) => {
 
         if (profilesError) throw profilesError;
 
+        console.log('Profiles found:', profiles);
+
         // Combinar os dados
         const likesData = votes.map(vote => {
           const profile = profiles?.find(p => p.id === vote.user_id);
+          console.log(`Looking for profile with ID ${vote.user_id}, found:`, profile);
           return {
             username: profile?.username || 'Usuário desconhecido',
             vote_type: vote.vote_type as 'like' | 'dislike'
           };
         });
 
+        console.log('Final likes data:', likesData);
         setLikes(likesData);
       } catch (error) {
         console.error('Error fetching likes:', error);
