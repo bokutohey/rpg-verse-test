@@ -1,7 +1,6 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 interface CharacterLikesProps {
   characterId: string;
@@ -12,15 +11,8 @@ interface VoteInfo {
   vote_type: 'like' | 'dislike';
 }
 
-interface Friendship {
-  id: string;
-  friend_name: string;
-  friendship_level: number;
-}
-
 const CharacterLikes = ({ characterId }: CharacterLikesProps) => {
   const [votes, setVotes] = useState<VoteInfo[]>([]);
-  const [friendships, setFriendships] = useState<Friendship[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -33,23 +25,8 @@ const CharacterLikes = ({ characterId }: CharacterLikesProps) => {
           .eq('character_id', characterId);
 
         if (votesError) {
-          console.error('Votes error:', votesError);
           throw votesError;
         }
-
-        // Buscar as amizades do personagem
-        const { data: friendshipsData, error: friendshipsError } = await supabase
-          .from('character_friendships')
-          .select('id, friend_name, friendship_level')
-          .eq('character_id', characterId)
-          .order('friendship_level', { ascending: false });
-
-        if (friendshipsError) {
-          console.error('Friendships error:', friendshipsError);
-          throw friendshipsError;
-        }
-
-        setFriendships(friendshipsData || []);
 
         if (!votesData || votesData.length === 0) {
           setVotes([]);
@@ -66,7 +43,6 @@ const CharacterLikes = ({ characterId }: CharacterLikesProps) => {
           .in('id', userIds);
 
         if (profilesError) {
-          console.error('Profiles error:', profilesError);
           throw profilesError;
         }
 
@@ -100,29 +76,6 @@ const CharacterLikes = ({ characterId }: CharacterLikesProps) => {
 
   return (
     <div className="space-y-4">
-      {/* Tabela de Amizades */}
-      {friendships.length > 0 && (
-        <div>
-          <h4 className="text-sm font-medium text-purple-400 mb-3">🤝 Amizades:</h4>
-          <Table>
-            <TableHeader>
-              <TableRow className="border-gray-600">
-                <TableHead className="text-gray-300">Personagem</TableHead>
-                <TableHead className="text-gray-300">Nível</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {friendships.map((friendship) => (
-                <TableRow key={friendship.id} className="border-gray-600">
-                  <TableCell className="text-white">{friendship.friend_name}</TableCell>
-                  <TableCell className="text-purple-400 font-medium">{friendship.friendship_level}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
-
       {/* Likes e Dislikes */}
       {(likes.length > 0 || dislikes.length > 0) && (
         <div className="space-y-3">
@@ -154,8 +107,8 @@ const CharacterLikes = ({ characterId }: CharacterLikesProps) => {
         </div>
       )}
 
-      {votes.length === 0 && friendships.length === 0 && (
-        <div className="text-sm text-gray-400">No votes or friendships yet.</div>
+      {votes.length === 0 && (
+        <div className="text-sm text-gray-400">No votes yet.</div>
       )}
     </div>
   );

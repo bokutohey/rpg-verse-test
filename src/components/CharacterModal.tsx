@@ -6,6 +6,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Edit, User, Trash2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCharacters } from '@/hooks/useCharacters';
@@ -134,22 +135,6 @@ const CharacterModal = ({ character, isOpen, onClose, currentUserId, onEdit }: C
                 <p className="text-purple-400 font-medium uppercase tracking-wide">{character.rpg_system}</p>
               </div>
 
-              {friendships.length > 0 && (
-                <div>
-                  <span className="text-sm text-gray-400">Amizades:</span>
-                  <div className="mt-2 space-y-2 max-h-40 overflow-y-auto">
-                    {friendships
-                      .sort((a, b) => b.friendship_level - a.friendship_level)
-                      .map((friendship, index) => (
-                        <div key={index} className="flex justify-between items-center bg-gray-800/50 rounded p-2">
-                          <span className="text-white">{friendship.friend_name}</span>
-                          <span className="text-purple-400 font-medium">Nível {friendship.friendship_level}</span>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              )}
-
               {/* Seção de Likes */}
               <div className="bg-gray-800/30 rounded-lg p-3 border border-gray-600">
                 <CharacterLikes characterId={character.id} />
@@ -157,6 +142,33 @@ const CharacterModal = ({ character, isOpen, onClose, currentUserId, onEdit }: C
             </div>
           </div>
         </div>
+
+        {/* Tabela de Amizades - Full Width */}
+        {friendships.length > 0 && (
+          <div className="mt-6">
+            <h4 className="text-lg font-semibold text-white mb-3">🤝 Amizades</h4>
+            <div className="bg-gray-800/30 rounded-lg border border-gray-600">
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-gray-600">
+                    <TableHead className="text-gray-300">Personagem</TableHead>
+                    <TableHead className="text-gray-300">Nível</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {friendships
+                    .sort((a, b) => b.friendship_level - a.friendship_level)
+                    .map((friendship, index) => (
+                      <TableRow key={index} className="border-gray-600">
+                        <TableCell className="text-white">{friendship.friend_name}</TableCell>
+                        <TableCell className="text-purple-400 font-medium">{friendship.friendship_level}</TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        )}
 
         <div className="mt-6">
           <h4 className="text-lg font-semibold text-white mb-3">História do Personagem</h4>
