@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { useEffect } from 'react';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -17,6 +19,14 @@ const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { signUp, user } = useAuth();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
@@ -39,20 +49,46 @@ const Register = () => {
       return;
     }
 
-    try {
-      // TODO: Implementar registro com Supabase
-      console.log('Register attempt:', formData);
-      
+    if (formData.password.length < 6) {
       toast({
-        title: "Conta criada!",
-        description: "Conecte ao Supabase para implementar registro real.",
+        title: "Erro",
+        description: "A senha deve ter pelo menos 6 caracteres.",
+        variant: "destructive",
       });
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const { error } = await signUp(formData.email, formData.password, formData.username);
       
-      navigate('/login');
+      if (error) {
+        let errorMessage = "Tente novamente mais tarde.";
+        
+        if (error.message.includes('User already registered')) {
+          errorMessage = "Este email já está cadastrado.";
+        } else if (error.message.includes('Password should be at least 6 characters')) {
+          errorMessage = "A senha deve ter pelo menos 6 caracteres.";
+        } else if (error.message.includes('Invalid email')) {
+          errorMessage = "Email inválido.";
+        }
+        
+        toast({
+          title: "Erro no cadastro",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Conta criada!",
+          description: "Verifique seu email para confirmar a conta e depois faça login.",
+        });
+        navigate('/login');
+      }
     } catch (error) {
       toast({
         title: "Erro no cadastro",
-        description: "Tente novamente mais tarde.",
+        description: "Erro inesperado. Tente novamente.",
         variant: "destructive",
       });
     } finally {

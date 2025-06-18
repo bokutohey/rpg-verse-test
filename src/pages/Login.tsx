@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { useEffect } from 'react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -13,26 +15,47 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { signIn, user } = useAuth();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      // TODO: Implementar autenticação com Supabase
-      console.log('Login attempt:', { email, password });
+      const { error } = await signIn(email, password);
       
-      // Simulação temporária
-      toast({
-        title: "Login realizado!",
-        description: "Conecte ao Supabase para implementar autenticação real.",
-      });
-      
-      navigate('/');
+      if (error) {
+        let errorMessage = "Verifique suas credenciais e tente novamente.";
+        
+        if (error.message.includes('Invalid login credentials')) {
+          errorMessage = "Email ou senha incorretos.";
+        } else if (error.message.includes('Email not confirmed')) {
+          errorMessage = "Confirme seu email antes de fazer login.";
+        }
+        
+        toast({
+          title: "Erro no login",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Login realizado!",
+          description: "Bem-vindo de volta!",
+        });
+        navigate('/');
+      }
     } catch (error) {
       toast({
         title: "Erro no login",
-        description: "Verifique suas credenciais e tente novamente.",
+        description: "Erro inesperado. Tente novamente.",
         variant: "destructive",
       });
     } finally {
@@ -99,9 +122,6 @@ const Login = () => {
                 Cadastre-se
               </button>
             </p>
-            <button className="text-sm text-accent hover:underline">
-              Esqueceu a senha?
-            </button>
           </div>
         </CardContent>
       </Card>

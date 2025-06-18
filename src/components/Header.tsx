@@ -1,17 +1,33 @@
 
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { User, LogOut, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 
-interface HeaderProps {
-  isAuthenticated: boolean;
-  username?: string;
-  onLogout: () => void;
-}
-
-const Header = ({ isAuthenticated, username, onLogout }: HeaderProps) => {
+const Header = () => {
   const navigate = useNavigate();
+  const { user, profile, signOut, loading } = useAuth();
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/');
+  };
+
+  if (loading) {
+    return (
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-sm border-b border-border">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+          <div 
+            className="text-2xl font-bold dracula-gradient cursor-pointer float-animation"
+            onClick={() => navigate('/')}
+          >
+            🎭 RPG Characters
+          </div>
+          <div className="text-white">Carregando...</div>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-sm border-b border-border">
@@ -24,7 +40,7 @@ const Header = ({ isAuthenticated, username, onLogout }: HeaderProps) => {
         </div>
 
         <nav className="flex items-center gap-4">
-          {isAuthenticated ? (
+          {user ? (
             <>
               <Button
                 variant="outline"
@@ -37,12 +53,14 @@ const Header = ({ isAuthenticated, username, onLogout }: HeaderProps) => {
               
               <div className="flex items-center gap-2 px-3 py-1 bg-card rounded-lg">
                 <User className="w-4 h-4 text-primary" />
-                <span className="text-sm text-foreground">{username}</span>
+                <span className="text-sm text-foreground">
+                  {profile?.username || user.email?.split('@')[0]}
+                </span>
               </div>
               
               <Button
                 variant="ghost"
-                onClick={onLogout}
+                onClick={handleLogout}
                 className="text-destructive hover:text-destructive hover:bg-destructive/10"
               >
                 <LogOut className="w-4 h-4" />
