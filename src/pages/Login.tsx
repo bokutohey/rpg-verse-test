@@ -82,7 +82,7 @@ const Login = () => {
             
             <Button
               type="submit"
-              className="w-full dracula-button"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium"
               disabled={isLoading}
             >
               {isLoading ? "Entrando..." : "Entrar"}

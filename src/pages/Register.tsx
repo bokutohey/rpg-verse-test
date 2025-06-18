@@ -64,10 +64,10 @@ const Register = () => {
     <div className="min-h-screen flex items-center justify-center p-4 pt-20">
       <Card className="w-full max-w-md dracula-card">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold dracula-gradient">
+          <CardTitle className="text-2xl font-bold text-white mb-2">
             🎭 Criar Conta
           </CardTitle>
-          <CardDescription className="text-muted-foreground">
+          <CardDescription className="text-gray-300">
             Crie sua conta para começar a criar personagens
           </CardDescription>
         </CardHeader>
@@ -75,7 +75,7 @@ const Register = () => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Nome de Usuário</Label>
+              <Label htmlFor="username" className="text-white">Nome de Usuário</Label>
               <Input
                 id="username"
                 name="username"
@@ -89,7 +89,7 @@ const Register = () => {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="email">E-mail</Label>
+              <Label htmlFor="email" className="text-white">E-mail</Label>
               <Input
                 id="email"
                 name="email"
@@ -103,7 +103,7 @@ const Register = () => {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
+              <Label htmlFor="password" className="text-white">Senha</Label>
               <Input
                 id="password"
                 name="password"
@@ -118,7 +118,7 @@ const Register = () => {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirmar Senha</Label>
+              <Label htmlFor="confirmPassword" className="text-white">Confirmar Senha</Label>
               <Input
                 id="confirmPassword"
                 name="confirmPassword"
@@ -133,7 +133,7 @@ const Register = () => {
             
             <Button
               type="submit"
-              className="w-full dracula-button"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium"
               disabled={isLoading}
             >
               {isLoading ? "Criando conta..." : "Criar Conta"}
@@ -141,7 +141,7 @@ const Register = () => {
           </form>
           
           <div className="mt-6 text-center">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-white">
               Já tem uma conta?{' '}
               <button
                 onClick={() => navigate('/login')}
