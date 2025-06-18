@@ -18,23 +18,38 @@ const CharacterLikes = ({ characterId }: CharacterLikesProps) => {
   useEffect(() => {
     const fetchLikes = async () => {
       try {
-        const { data, error } = await supabase
+        // Primeiro, buscar os votos de like para o personagem
+        const { data: votes, error: votesError } = await supabase
           .from('character_votes')
-          .select(`
-            vote_type,
-            profiles!inner (
-              username
-            )
-          `)
+          .select('user_id, vote_type')
           .eq('character_id', characterId)
           .eq('vote_type', 'like');
 
-        if (error) throw error;
+        if (votesError) throw votesError;
 
-        const likesData = data?.map(vote => ({
-          username: (vote.profiles as any).username,
-          vote_type: vote.vote_type as 'like' | 'dislike'
-        })) || [];
+        if (!votes || votes.length === 0) {
+          setLikes([]);
+          setLoading(false);
+          return;
+        }
+
+        // Buscar os usernames dos usuários que curtiram
+        const userIds = votes.map(vote => vote.user_id);
+        const { data: profiles, error: profilesError } = await supabase
+          .from('profiles')
+          .select('id, username')
+          .in('id', userIds);
+
+        if (profilesError) throw profilesError;
+
+        // Combinar os dados
+        const likesData = votes.map(vote => {
+          const profile = profiles?.find(p => p.id === vote.user_id);
+          return {
+            username: profile?.username || 'Usuário desconhecido',
+            vote_type: vote.vote_type as 'like' | 'dislike'
+          };
+        });
 
         setLikes(likesData);
       } catch (error) {
