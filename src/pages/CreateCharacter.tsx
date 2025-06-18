@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,12 +11,15 @@ import { supabase } from '@/integrations/supabase/client';
 import FriendshipManager from '@/components/FriendshipManager';
 
 const rpgSystems = [
-  'Véu Quebrado',
   'Complicações em Arda',
   'Guerra Civil 2',
-  'Vampiro: A Máscara',
-  'Star Wars: Guerra dos Clones',
+  'Jujutsu Kaisen',
   'Kimetsu no Yaiba',
+  'Naruto: O preço da paz',
+  'Ordem paranormal',
+  'Star Wars: Guerra dos Clones',
+  'Vampiro: A Máscara',
+  'Véu Quebrado',
 ];
 
 interface Friendship {
