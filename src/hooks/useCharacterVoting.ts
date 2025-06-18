@@ -100,7 +100,7 @@ export const useCharacterVoting = (characterId: string, userId?: string) => {
         setUserVote({ vote_type: voteType });
       }
 
-      // Atualiza as estatísticas
+      // Atualiza as estatísticas imediatamente
       await fetchVoteStats();
     } catch (error) {
       console.error('Error voting:', error);
@@ -117,6 +117,36 @@ export const useCharacterVoting = (characterId: string, userId?: string) => {
   useEffect(() => {
     fetchVoteStats();
     fetchUserVote();
+
+    // Configurar escuta em tempo real para mudanças nos votos
+    const channel = supabase
+      .channel('character-votes-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Escutar INSERT, UPDATE e DELETE
+          schema: 'public',
+          table: 'character_votes',
+          filter: `character_id=eq.${characterId}`
+        },
+        (payload) => {
+          console.log('Vote change detected:', payload);
+          // Atualizar estatísticas quando houver mudanças nos votos
+          fetchVoteStats();
+          // Se o voto foi do usuário atual, atualizar também o voto do usuário
+          if (userId && payload.new?.user_id === userId) {
+            fetchUserVote();
+          } else if (userId && payload.old?.user_id === userId) {
+            fetchUserVote();
+          }
+        }
+      )
+      .subscribe();
+
+    // Cleanup ao desmontar o componente
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [characterId, userId]);
 
   return {

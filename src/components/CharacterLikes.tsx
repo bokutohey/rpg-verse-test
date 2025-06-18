@@ -15,56 +15,80 @@ const CharacterLikes = ({ characterId }: CharacterLikesProps) => {
   const [votes, setVotes] = useState<VoteInfo[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Buscar todos os votos (likes e dislikes) para o personagem
-        const { data: votesData, error: votesError } = await supabase
-          .from('character_votes')
-          .select('user_id, vote_type')
-          .eq('character_id', characterId);
+  const fetchData = async () => {
+    try {
+      // Buscar todos os votos (likes e dislikes) para o personagem
+      const { data: votesData, error: votesError } = await supabase
+        .from('character_votes')
+        .select('user_id, vote_type')
+        .eq('character_id', characterId);
 
-        if (votesError) {
-          throw votesError;
-        }
-
-        if (!votesData || votesData.length === 0) {
-          setVotes([]);
-          setLoading(false);
-          return;
-        }
-
-        // Buscar os usernames dos usuários que votaram
-        const userIds = votesData.map(vote => vote.user_id);
-        
-        const { data: profiles, error: profilesError } = await supabase
-          .from('profiles')
-          .select('id, username')
-          .in('id', userIds);
-
-        if (profilesError) {
-          throw profilesError;
-        }
-
-        // Combinar os dados
-        const votesInfo = votesData.map(vote => {
-          const profile = profiles?.find(p => p.id === vote.user_id);
-          
-          return {
-            username: profile?.username || 'Usuário desconhecido',
-            vote_type: vote.vote_type as 'like' | 'dislike'
-          };
-        });
-
-        setVotes(votesInfo);
-      } catch (error) {
-        console.error('Error in fetchData:', error);
-      } finally {
-        setLoading(false);
+      if (votesError) {
+        throw votesError;
       }
-    };
 
+      if (!votesData || votesData.length === 0) {
+        setVotes([]);
+        setLoading(false);
+        return;
+      }
+
+      // Buscar os usernames dos usuários que votaram
+      const userIds = votesData.map(vote => vote.user_id);
+      
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, username')
+        .in('id', userIds);
+
+      if (profilesError) {
+        throw profilesError;
+      }
+
+      // Combinar os dados
+      const votesInfo = votesData.map(vote => {
+        const profile = profiles?.find(p => p.id === vote.user_id);
+        
+        return {
+          username: profile?.username || 'Usuário desconhecido',
+          vote_type: vote.vote_type as 'like' | 'dislike'
+        };
+      });
+
+      setVotes(votesInfo);
+    } catch (error) {
+      console.error('Error in fetchData:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
+
+    // Configurar escuta em tempo real para mudanças nos votos
+    const channel = supabase
+      .channel('character-likes-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Escutar INSERT, UPDATE e DELETE
+          schema: 'public',
+          table: 'character_votes',
+          filter: `character_id=eq.${characterId}`
+        },
+        (payload) => {
+          console.log('Character likes change detected:', payload);
+          // Atualizar dados quando houver mudanças nos votos
+          fetchData();
+        }
+      )
+      .subscribe();
+
+    // Cleanup ao desmontar o componente
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [characterId]);
 
   if (loading) {
