@@ -31,6 +31,7 @@ export const useCharacters = () => {
 
   const fetchCharacters = async () => {
     try {
+      // Não precisamos mais verificar autenticação para buscar personagens
       const { data, error } = await supabase
         .from('characters')
         .select(`

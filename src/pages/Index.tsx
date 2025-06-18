@@ -95,6 +95,11 @@ const Index = () => {
                   : "Nenhum personagem encontrado."
                 }
               </p>
+              {!user && (
+                <p className="text-gray-400 mt-4">
+                  Faça login para criar seu primeiro personagem!
+                </p>
+              )}
             </div>
           ) : (
             <div className="space-y-12">
