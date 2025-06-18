@@ -9,7 +9,7 @@ import { useCharacters, Character } from '@/hooks/useCharacters';
 import { useAuth } from '@/contexts/AuthContext';
 
 const Index = () => {
-  const { characters, loading } = useCharacters();
+  const { characters, loading, fetchCharacters } = useCharacters();
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
@@ -39,6 +39,12 @@ const Index = () => {
   const handleCharacterClick = (character: Character) => {
     setSelectedCharacter(character);
     setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    // Refresh da lista após fechar o modal (caso tenha havido exclusão)
+    fetchCharacters();
   };
 
   if (loading) {
@@ -121,7 +127,7 @@ const Index = () => {
       <CharacterModal
         character={selectedCharacter}
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={handleModalClose}
         currentUserId={user?.id}
       />
     </div>

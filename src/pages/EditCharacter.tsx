@@ -1,11 +1,11 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -25,7 +25,8 @@ interface Friendship {
   friendship_level: number;
 }
 
-const CreateCharacter = () => {
+const EditCharacter = () => {
+  const { id } = useParams<{ id: string }>();
   const [formData, setFormData] = useState({
     name: '',
     playerName: '',
@@ -37,9 +38,67 @@ const CreateCharacter = () => {
   });
   const [friendships, setFriendships] = useState<Friendship[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingData, setIsLoadingData] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
+
+  useEffect(() => {
+    if (id) {
+      loadCharacter();
+    }
+  }, [id]);
+
+  const loadCharacter = async () => {
+    try {
+      const { data: character, error } = await supabase
+        .from('characters')
+        .select(`
+          *,
+          character_friendships (
+            friend_name,
+            friendship_level
+          )
+        `)
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+
+      // Verificar se o usuário pode editar
+      if (character.user_id !== user?.id && profile?.role !== 'admin') {
+        toast({
+          title: "Acesso negado",
+          description: "Você não tem permissão para editar este personagem.",
+          variant: "destructive",
+        });
+        navigate('/');
+        return;
+      }
+
+      setFormData({
+        name: character.name,
+        playerName: character.player_name,
+        age: character.age.toString(),
+        height: character.height.toString(),
+        rpgSystem: character.rpg_system,
+        story: character.story,
+        imageUrl: character.image_url || '',
+      });
+
+      setFriendships(character.character_friendships || []);
+    } catch (error) {
+      console.error('Error loading character:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível carregar o personagem.",
+        variant: "destructive",
+      });
+      navigate('/');
+    } finally {
+      setIsLoadingData(false);
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData(prev => ({
@@ -54,7 +113,7 @@ const CreateCharacter = () => {
     if (!user) {
       toast({
         title: "Erro",
-        description: "Você precisa estar logado para criar um personagem.",
+        description: "Você precisa estar logado para editar um personagem.",
         variant: "destructive",
       });
       return;
@@ -63,10 +122,10 @@ const CreateCharacter = () => {
     setIsLoading(true);
 
     try {
-      // Criar personagem
-      const { data: character, error: characterError } = await supabase
+      // Atualizar personagem
+      const { error: characterError } = await supabase
         .from('characters')
-        .insert({
+        .update({
           name: formData.name,
           player_name: formData.playerName,
           age: parseInt(formData.age),
@@ -74,19 +133,23 @@ const CreateCharacter = () => {
           rpg_system: formData.rpgSystem,
           story: formData.story,
           image_url: formData.imageUrl || null,
-          user_id: user.id
+          updated_at: new Date().toISOString()
         })
-        .select()
-        .single();
+        .eq('id', id);
 
       if (characterError) throw characterError;
 
-      // Criar amizades
+      // Remover amizades existentes e adicionar as novas
+      await supabase
+        .from('character_friendships')
+        .delete()
+        .eq('character_id', id);
+
       if (friendships.length > 0) {
         const friendshipData = friendships
           .filter(f => f.friend_name.trim())
           .map(friendship => ({
-            character_id: character.id,
+            character_id: id,
             friend_name: friendship.friend_name.trim(),
             friendship_level: friendship.friendship_level
           }));
@@ -103,16 +166,16 @@ const CreateCharacter = () => {
       }
 
       toast({
-        title: "Personagem criado!",
-        description: "Seu personagem foi criado com sucesso.",
+        title: "Personagem atualizado!",
+        description: "Seu personagem foi atualizado com sucesso.",
       });
       
       navigate('/');
     } catch (error) {
-      console.error('Error creating character:', error);
+      console.error('Error updating character:', error);
       toast({
         title: "Erro",
-        description: "Não foi possível criar o personagem.",
+        description: "Não foi possível atualizar o personagem.",
         variant: "destructive",
       });
     } finally {
@@ -120,13 +183,21 @@ const CreateCharacter = () => {
     }
   };
 
+  if (isLoadingData) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-white">Carregando personagem...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen p-4 pt-24">
       <div className="container mx-auto max-w-4xl">
         <Card className="dracula-card">
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-white text-center">
-              🎭 Criar Novo Personagem
+              ✏️ Editar Personagem
             </CardTitle>
           </CardHeader>
           
@@ -275,7 +346,7 @@ const CreateCharacter = () => {
                   className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
                   disabled={isLoading}
                 >
-                  {isLoading ? "Criando..." : "Criar Personagem"}
+                  {isLoading ? "Salvando..." : "Salvar Alterações"}
                 </Button>
               </div>
             </form>
@@ -286,4 +357,4 @@ const CreateCharacter = () => {
   );
 };
 
-export default CreateCharacter;
+export default EditCharacter;
