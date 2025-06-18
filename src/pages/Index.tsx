@@ -112,7 +112,7 @@ const Index = () => {
           ) : (
             <div className="space-y-12">
               {sortedRPGSystems.map((rpgSystem) => (
-                <section key={rpgSystem}>
+                <section key={rpgSystem} className="relative">
                   <h2 className="text-2xl font-bold text-primary mb-6 pb-2 border-b border-gray-600">
                     📖 {rpgSystem}
                     <span className="text-sm text-gray-400 font-normal ml-2">
@@ -120,27 +120,34 @@ const Index = () => {
                     </span>
                   </h2>
                   
-                  <Carousel
-                    opts={{
-                      align: "start",
-                      loop: false,
-                    }}
-                    className="w-full"
-                  >
-                    <CarouselContent className="-ml-2 md:-ml-4">
-                      {charactersByRPG[rpgSystem].map(character => (
-                        <CarouselItem key={character.id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
-                          <CharacterCard
-                            character={character}
-                            onClick={() => handleCharacterClick(character)}
-                            currentUserId={user?.id}
-                          />
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                    <CarouselPrevious className="hidden sm:flex" />
-                    <CarouselNext className="hidden sm:flex" />
-                  </Carousel>
+                  <div className="relative px-12">
+                    <Carousel
+                      opts={{
+                        align: "start",
+                        loop: false,
+                        slidesToScroll: 1,
+                      }}
+                      className="w-full"
+                    >
+                      <CarouselContent className="flex">
+                        {charactersByRPG[rpgSystem].map(character => (
+                          <CarouselItem key={character.id} className="flex-none w-80 mr-4">
+                            <CharacterCard
+                              character={character}
+                              onClick={() => handleCharacterClick(character)}
+                              currentUserId={user?.id}
+                            />
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                      {charactersByRPG[rpgSystem].length > 1 && (
+                        <>
+                          <CarouselPrevious className="absolute -left-6 top-1/2 -translate-y-1/2" />
+                          <CarouselNext className="absolute -right-6 top-1/2 -translate-y-1/2" />
+                        </>
+                      )}
+                    </Carousel>
+                  </div>
                 </section>
               ))}
             </div>
