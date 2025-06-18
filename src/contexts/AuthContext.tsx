@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 interface Profile {
   id: string;
   username: string;
+  role: 'admin' | 'user';
   created_at: string;
   updated_at: string;
 }
