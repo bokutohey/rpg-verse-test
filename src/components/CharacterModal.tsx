@@ -10,6 +10,7 @@ import { Edit, User, Trash2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCharacters } from '@/hooks/useCharacters';
 import { useNavigate } from 'react-router-dom';
+import CharacterLikes from '@/components/CharacterLikes';
 
 interface Character {
   id: string;
@@ -148,6 +149,11 @@ const CharacterModal = ({ character, isOpen, onClose, currentUserId, onEdit }: C
                   </div>
                 </div>
               )}
+
+              {/* Seção de Likes */}
+              <div className="bg-gray-800/30 rounded-lg p-3 border border-gray-600">
+                <CharacterLikes characterId={character.id} />
+              </div>
             </div>
           </div>
         </div>
