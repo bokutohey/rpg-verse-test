@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Search, Edit, Trash2 } from 'lucide-react';
@@ -145,10 +144,11 @@ const MyCharacters = () => {
                         <CharacterCard
                           character={character}
                           onClick={() => handleCharacterClick(character)}
+                          currentUserId={user?.id}
                         />
                         
                         {/* Botões de Ação */}
-                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-2">
+                        <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-2">
                           <Button
                             size="sm"
                             variant="outline"

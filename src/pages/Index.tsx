@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
@@ -119,6 +118,7 @@ const Index = () => {
                         key={character.id}
                         character={character}
                         onClick={() => handleCharacterClick(character)}
+                        currentUserId={user?.id}
                       />
                     ))}
                   </div>

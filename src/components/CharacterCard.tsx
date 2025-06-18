@@ -1,5 +1,6 @@
 
 import { Card, CardContent } from '@/components/ui/card';
+import VotingButtons from '@/components/VotingButtons';
 
 interface Character {
   id: string;
@@ -15,9 +16,10 @@ interface Character {
 interface CharacterCardProps {
   character: Character;
   onClick: () => void;
+  currentUserId?: string;
 }
 
-const CharacterCard = ({ character, onClick }: CharacterCardProps) => {
+const CharacterCard = ({ character, onClick, currentUserId }: CharacterCardProps) => {
   const truncatedStory = character.story.length > 100 
     ? character.story.substring(0, 100) + '...' 
     : character.story;
@@ -41,6 +43,15 @@ const CharacterCard = ({ character, onClick }: CharacterCardProps) => {
             </div>
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+          
+          {/* Voting buttons positioned in top right */}
+          <div className="absolute top-2 right-2">
+            <VotingButtons 
+              characterId={character.id} 
+              userId={currentUserId}
+            />
+          </div>
+          
           <div className="absolute bottom-0 left-0 right-0 p-4">
             <div className="bg-black/70 backdrop-blur-sm rounded-lg p-3">
               <h3 className="text-lg font-bold text-white mb-1">{character.name}</h3>

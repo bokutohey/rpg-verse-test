@@ -41,6 +41,41 @@ export type Database = {
           },
         ]
       }
+      character_votes: {
+        Row: {
+          character_id: string
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+          vote_type: string
+        }
+        Insert: {
+          character_id: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+          vote_type: string
+        }
+        Update: {
+          character_id?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+          vote_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "character_votes_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       characters: {
         Row: {
           age: number
@@ -109,7 +144,23 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      character_vote_stats: {
+        Row: {
+          character_id: string | null
+          dislikes_count: number | null
+          likes_count: number | null
+          total_votes: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "character_votes_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       is_admin: {
