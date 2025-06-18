@@ -22,7 +22,7 @@
     --secondary-foreground: #f8f8f2;
 
     --muted: #44475a;
-    --muted-foreground: #6272a4;
+    --muted-foreground: #bd93f9;
 
     --accent: #ff5555;
     --accent-foreground: #f8f8f2;
@@ -58,7 +58,7 @@
     --secondary: #6272a4;
     --secondary-foreground: #f8f8f2;
     --muted: #44475a;
-    --muted-foreground: #6272a4;
+    --muted-foreground: #bd93f9;
     --accent: #ff5555;
     --accent-foreground: #f8f8f2;
     --destructive: #ff5555;
@@ -86,6 +86,7 @@
     @apply bg-background text-foreground font-sans;
     background: linear-gradient(135deg, #282a36 0%, #1e1f29 100%);
     min-height: 100vh;
+    color: #f8f8f2;
   }
 }
 
@@ -94,6 +95,7 @@
   .dracula-card {
     @apply bg-card border border-border rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105;
     background: linear-gradient(145deg, #44475a, #3a3d4e);
+    color: #f8f8f2;
   }
 
   .dracula-button {
@@ -102,6 +104,8 @@
 
   .dracula-input {
     @apply bg-input border border-border rounded-md px-3 py-2 text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-transparent;
+    color: #f8f8f2;
+    background-color: #44475a;
   }
 
   .dracula-gradient {

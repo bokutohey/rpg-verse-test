@@ -41,10 +41,12 @@ const CharacterCard = ({ character, onClick }: CharacterCardProps) => {
               <span className="text-6xl opacity-50">🎭</span>
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-4">
-            <h3 className="text-lg font-bold text-primary mb-1">{character.name}</h3>
-            <p className="text-sm text-muted-foreground">por {character.playerName}</p>
+            <div className="bg-black/70 backdrop-blur-sm rounded-lg p-3">
+              <h3 className="text-lg font-bold text-white mb-1">{character.name}</h3>
+              <p className="text-sm text-gray-200">por {character.playerName}</p>
+            </div>
           </div>
         </div>
         
@@ -52,7 +54,7 @@ const CharacterCard = ({ character, onClick }: CharacterCardProps) => {
           <div className="text-xs text-accent font-medium mb-2 uppercase tracking-wide">
             {character.rpgSystem}
           </div>
-          <p className="text-sm text-foreground/80 leading-relaxed">
+          <p className="text-sm text-white/90 leading-relaxed">
             {truncatedStory}
           </p>
         </div>
