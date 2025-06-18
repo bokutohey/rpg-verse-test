@@ -47,7 +47,7 @@ const Login = () => {
           <CardTitle className="text-2xl font-bold dracula-gradient">
             🎭 Entrar
           </CardTitle>
-          <CardDescription className="text-muted-foreground">
+          <CardDescription className="text-white">
             Acesse sua conta para gerenciar seus personagens
           </CardDescription>
         </CardHeader>
@@ -55,7 +55,7 @@ const Login = () => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">E-mail</Label>
+              <Label htmlFor="email" className="text-white">E-mail</Label>
               <Input
                 id="email"
                 type="email"
@@ -68,7 +68,7 @@ const Login = () => {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
+              <Label htmlFor="password" className="text-white">Senha</Label>
               <Input
                 id="password"
                 type="password"
@@ -90,7 +90,7 @@ const Login = () => {
           </form>
           
           <div className="mt-6 text-center space-y-2">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-white">
               Não tem uma conta?{' '}
               <button
                 onClick={() => navigate('/register')}
