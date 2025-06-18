@@ -134,9 +134,9 @@ export const useCharacterVoting = (characterId: string, userId?: string) => {
           // Atualizar estatísticas quando houver mudanças nos votos
           fetchVoteStats();
           // Se o voto foi do usuário atual, atualizar também o voto do usuário
-          if (userId && payload.new?.user_id === userId) {
+          if (userId && payload.new && (payload.new as any).user_id === userId) {
             fetchUserVote();
-          } else if (userId && payload.old?.user_id === userId) {
+          } else if (userId && payload.old && (payload.old as any).user_id === userId) {
             fetchUserVote();
           }
         }
