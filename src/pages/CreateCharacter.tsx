@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -181,7 +180,7 @@ const CreateCharacter = () => {
       <div className="container mx-auto max-w-4xl">
         <Card className="dracula-card">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold dracula-gradient text-center">
+            <CardTitle className="text-2xl font-bold text-white text-center">
               🎭 Criar Novo Personagem
             </CardTitle>
           </CardHeader>
