@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
@@ -6,6 +7,13 @@ import CharacterModal from '@/components/CharacterModal';
 import Header from '@/components/Header';
 import { useCharacters, Character } from '@/hooks/useCharacters';
 import { useAuth } from '@/contexts/AuthContext';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 const Index = () => {
   const { characters, loading, fetchCharacters } = useCharacters();
@@ -112,16 +120,27 @@ const Index = () => {
                     </span>
                   </h2>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {charactersByRPG[rpgSystem].map(character => (
-                      <CharacterCard
-                        key={character.id}
-                        character={character}
-                        onClick={() => handleCharacterClick(character)}
-                        currentUserId={user?.id}
-                      />
-                    ))}
-                  </div>
+                  <Carousel
+                    opts={{
+                      align: "start",
+                      loop: false,
+                    }}
+                    className="w-full"
+                  >
+                    <CarouselContent className="-ml-2 md:-ml-4">
+                      {charactersByRPG[rpgSystem].map(character => (
+                        <CarouselItem key={character.id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
+                          <CharacterCard
+                            character={character}
+                            onClick={() => handleCharacterClick(character)}
+                            currentUserId={user?.id}
+                          />
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious className="hidden sm:flex" />
+                    <CarouselNext className="hidden sm:flex" />
+                  </Carousel>
                 </section>
               ))}
             </div>
